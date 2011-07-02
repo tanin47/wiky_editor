@@ -21,8 +21,15 @@
 					this.wiky_editor.handles = handles;
 				}
 				
-				this.wiky_editor.undo = function() {
+				this.wiky_editor.undo = function(event) {
 					if (this.current_pointer < (this.data.length - 1)) {
+						
+						// Pressing undo for the first time, we have to save the current content.
+						if (this.current_pointer == 0) {
+							this.save_history(event,true);
+//							console.log(this.data);
+						}
+						
 						this.current_pointer++;
 						this.editor.value = this.data[this.current_pointer];
 					}
@@ -40,6 +47,54 @@
 //					console.log(this.data);
 //					console.log('redo ' + this.current_pointer);
 				}
+				
+				this.wiky_editor.save_history = function(event,force) {
+				
+					if (this.just_undo_redo == true) {
+						this.just_undo_redo = false;
+						return;
+					}
+
+					this.action_count++;
+						
+					// This occurs when users press some undoes and type something new, so we delete the lines of redoes.
+					if (this.data.length > 0 && this.editor.value != this.data[0]) {
+						if (this.current_pointer > 0) {
+							this.data.splice(0,this.current_pointer);
+							this.current_pointer = 0;
+						}
+					}
+					
+					
+					// It makes sense to save:
+					// (1) when typing some x characters
+					// (2) press enter (it is a thought unit)
+					// (3) Ctrl + V (patse a content)
+					// (4) Delete a chunk of content.
+					if (force == true
+						|| this.action_count >= this.action_save_count
+						|| event.which == 13 // enter
+						|| (event.which == 8 && Math.abs(this.editor.value.length - this.data[0].length) > 1) //
+						|| this.just_did_special_action == true
+						) {
+						
+						if (this.data.length == 0 || this.editor.value != this.data[0]) {
+							
+							this.data.unshift(this.editor.value);
+							if (this.data.length > this.data_max) {
+								this.data.pop();
+							}
+							
+//							console.log(this.data);
+						}
+						
+						this.action_count = 0;
+						
+					}
+					
+					this.just_did_special_action = false;
+					this.just_undo_redo = false;
+				}
 			
 			    $(this).keydown(function(e)
 			    {
@@ -48,24 +103,28 @@
 					this.wiky_editor.just_undo_redo = false;
 					this.wiky_editor.just_did_special_action = false;
 					
+					// We shall save content to data[] before perform an action (e.g. make bold or pasting)
 					if (e.ctrlKey == true) {
 						
 						doSomething = true;
 						if (e.which == zKey) {
 							
+							
+							this.wiky_editor.undo(e);
 							this.wiky_editor.just_undo_redo = true;
-							this.wiky_editor.undo();
 							
 						} else if (e.which == yKey) {
 							
+							
+							this.wiky_editor.redo(e);
 							this.wiky_editor.just_undo_redo = true;
-							this.wiky_editor.redo();
 							
 						} else {
 							doSomething = false;
 							
 							for (var i=0;i<this.wiky_editor.handles.length;i++) {
 								if (this.wiky_editor.handles[i](this,e.which)) {
+									this.wiky_editor.save_history(e);
 									doSomething = true;
 									this.wiky_editor.just_did_special_action = true;
 									break;
@@ -73,6 +132,7 @@
 							}
 							
 							if (e.which == vKey) {
+								this.wiky_editor.save_history(e);
 								this.wiky_editor.just_did_special_action = true;
 							}
 						}
@@ -81,55 +141,8 @@
 							e.preventDefault();
 						}
 					}
-			    }).keypress(function(e) {
-					
-					if (this.wiky_editor.just_undo_redo == true) {
-						this.wiky_editor.just_undo_redo = false;
-						return;
-					}
-
-					this.wiky_editor.just_undo_redo = false;
-
-					var obj = this;
-					var latest_key = e.which;
-					
-					setTimeout(function() {
-						obj.wiky_editor.action_count++;
-						
-						// This occurs when users press some undoes and type something new, so we delete the lines of redoes.
-						if (obj.wiky_editor.data.length > 0 && obj.value != obj.wiky_editor.data[0]) {
-							if (obj.wiky_editor.current_pointer > 0) {
-								obj.wiky_editor.data.splice(0,obj.wiky_editor.current_pointer);
-								obj.wiky_editor.current_pointer = 0;
-							}
-						}
-						
-						
-						// It makes sense to save:
-						// (1) when typing some x characters
-						// (2) press enter (it is a thought unit)
-						// (3) Ctrl + V (patse a content)
-						if (obj.wiky_editor.action_count >= obj.wiky_editor.action_save_count
-							|| latest_key == 13 // enter
-							|| (obj.wiky_editor.just_did_special_action == true && obj.value != obj.wiky_editor.data[0])
-							) {
-							
-							if (obj.wiky_editor.data.length == 0 || obj.value != obj.wiky_editor.data[0]) {
-								
-								obj.wiky_editor.data.unshift(obj.value);
-								if (obj.wiky_editor.data.length > obj.wiky_editor.data_max) {
-									obj.wiky_editor.data.pop();
-								}
-								
-								console.log(obj.wiky_editor.data);
-							}
-							
-							obj.wiky_editor.action_count = 0;
-							
-						}
-						
-						obj.wiky_editor.just_did_special_action == true
-					},1);
+			    }).keypress(function(e){
+					this.wiky_editor.save_history(e);
 				});
 			});
 		}
