@@ -8,38 +8,249 @@
  		wiky_editor: function() {
 			return this.each(function() {
 				
-				bold = function(input,key) {
-					if (key != 66) return false;
+				this.insert_bold = function(input,key) {
+					if (key != undefined && key != 66) return false;
 					
-					wiky_helper.wrap(input,"'''","ตัวหนา");
+					var count_sym = wiky_helper.count_wrapper(input,"'",3);
 					
-					return true;
-				}
-				
-				italic = function(input,key) {
-					if (key != 73) return false;
-					
-					wiky_helper.wrap(input,"''","ตัวเอียง");
-					
-					return true;
-				}
-				
-				heading = function(input,key) {
-					if (key != 72) return false;
-					
-					wiky_helper.wrap(input,"===","หัวข้อ");
+					if (count_sym.left >= 3 && count_sym.right >= 3) {
+						wiky_helper.unwrap(input, count_sym.pos.start, count_sym.pos.end, "'''", "ตัวหนา");
+					}
+					else {
+						
+						var pos = wiky_helper.identify_whole_word(input);
+						wiky_helper.wrap(input, pos.start, pos.end, "'''", "ตัวหนา");
+					}
 					
 					return true;
 				}
 				
-				$(this).wiky_base_editor([bold,italic,heading]);
+				this.insert_italic = function(input,key) {
+					if (key != undefined && key != 73) return false;
+					
+					var count_sym = wiky_helper.count_wrapper(input,"'",2);
+					
+					
+					if (count_sym.left >= 2 && 
+						count_sym.right >= 2 &&
+						count_sym.left != 3 &&
+						count_sym.right != 3) {
+					
+						wiky_helper.unwrap(input, count_sym.pos.start, count_sym.pos.end, "''", "ตัวเอียง");
+						
+					} else {
+					
+						var pos = wiky_helper.identify_whole_word(input);
+						wiky_helper.wrap(input, pos.start, pos.end, "''", "ตัวเอียง");
+					}
+					
+					
+					
+					return true;
+				}
+				
+				this.insert_heading = function(input,key) {
+					if (key != undefined && key != 72) return false;
+					
+					var count_sym = wiky_helper.count_beginning_and_end(input,"=");
+					
+					if (count_sym.left >= 3 && count_sym.right >= 3) {
+						wiky_helper.unwrap(input, count_sym.pos.start, count_sym.pos.end, "=", "หัวข้อ");
+					}
+					else if (count_sym.left >= 2 && count_sym.right >= 2) {
+						wiky_helper.unwrap(input, count_sym.pos.start, count_sym.pos.end, "==", "หัวข้อ");
+					} else {
+					
+						var pos = wiky_helper.identify_whole_line(input);
+						wiky_helper.wrap(input, pos.start, pos.end, "===", "หัวข้อ");
+					}
+					
+					
+					return true;
+				}
+				
+				$(this).wiky_base_editor([this.insert_bold,this.insert_italic,this.insert_heading]);
 			});
 		}
 	});
 })(jQuery);
 
 wiky_helper = {}
-wiky_helper.wrap = function(input,symbols,default_text) {
+wiky_helper.wrap = function(input, pos_start, pos_end, symbols, default_text){
+	var s = input.value;
+	
+	if (pos_end > pos_start) {
+		s = s.substring(0, pos_start) + ""+symbols+"" + s.substring(pos_start, pos_end) + ""+symbols+"" + s.substring(pos_end);
+	}
+	else {
+		s = s.substring(0, pos_start) + ""+symbols+"" + default_text + ""+symbols+"" + s.substring(pos_end);
+		pos_end = pos_start + default_text.length;
+	}
+	
+	input.value = s;
+	wiky_helper.set_selection(input, pos_start + symbols.length, pos_end + symbols.length);
+}
+
+wiky_helper.unwrap = function(input, pos_start, pos_end, symbols, default_text){
+	var s = input.value;
+	
+	s = s.substring(0, pos_start - symbols.length) + s.substring(pos_start, pos_end) + s.substring(pos_end + symbols.length);
+	
+	input.value = s;
+	wiky_helper.set_selection(input, pos_start - symbols.length, pos_end - symbols.length);
+}
+
+wiky_helper.count_beginning_and_end = function(input,sym) {
+	
+	var result = {left:0,right:0,pos: {start:0,end:0}};
+	var s = input.value;
+	
+	var pos = wiky_helper.get_selection(input);
+	
+	{
+		var count_single_quote = 0;
+		var tmp_pos_start = pos.start;
+		while (tmp_pos_start >= 0) {
+			if (s.charAt(tmp_pos_start) == sym) {
+				count_single_quote++;
+			}
+			else {
+				if (s.charAt(tmp_pos_start) == "\n") {
+					break;
+				}
+				else {
+					count_single_quote = 0;
+				}
+			}
+			
+			tmp_pos_start--;
+		}
+		
+		result.left = count_single_quote;
+		result.pos.start = tmp_pos_start + count_single_quote+1;
+	}
+	
+	{
+		var count_single_quote = 0;
+		var tmp_pos_end = pos.end;
+		while (tmp_pos_end < s.length) {
+			if (s.charAt(tmp_pos_end) == sym) {
+				count_single_quote++;
+			}
+			else 
+				if (s.charAt(tmp_pos_end) == "\n") {
+					break;
+				}
+				else {
+					count_single_quote = 0;
+				}
+			
+
+			tmp_pos_end++;
+		}
+		
+		result.right = count_single_quote;
+		result.pos.end = tmp_pos_end - count_single_quote;
+	}
+	
+	return result;
+}
+
+wiky_helper.count_wrapper = function(input,sym,min) {
+	
+	var result = {left:0,right:0,pos: {start:0,end:0}};
+	var s = input.value;
+	
+	var pos = wiky_helper.get_selection(input);
+	
+	{
+		var count_single_quote = 0;
+		var tmp_pos_start = pos.start;
+		while (tmp_pos_start >= 0) {
+			if (s.charAt(tmp_pos_start) == sym) {
+				count_single_quote++;
+			}
+			else {
+				if (s.charAt(tmp_pos_start) == "\n") {
+					break;
+				}
+				else {
+					if (count_single_quote >= min) {
+						break;
+					} else {
+						count_single_quote = 0;
+					}
+					
+				}
+			}
+			
+			tmp_pos_start--;
+		}
+		
+		result.left = count_single_quote;
+		result.pos.start = tmp_pos_start + count_single_quote+1;
+	}
+	
+	{
+		var count_single_quote = 0;
+		var tmp_pos_end = pos.end;
+		while (tmp_pos_end < s.length) {
+			if (s.charAt(tmp_pos_end) == sym) {
+				count_single_quote++;
+			}
+			else 
+				if (s.charAt(tmp_pos_end) == "\n") {
+					break;
+				}
+				else {
+					if (count_single_quote >= min) {
+						break;
+					} else {
+						count_single_quote = 0;
+					}
+				}
+			
+
+			tmp_pos_end++;
+		}
+		
+		result.right = count_single_quote;
+		result.pos.end = tmp_pos_end - count_single_quote;
+	}
+	
+	return result;
+}
+
+wiky_helper.identify_whole_line = function(input) {
+	
+	var s = input.value;
+	var pos = wiky_helper.get_selection(input);
+	
+	// identify the whole line
+	while (pos.start >= 0 && s.charAt(pos.start) != '\n') pos.start--;
+	pos.start++;
+	
+	while (pos.end < s.length && s.charAt(pos.end) != '\n') pos.end++;
+
+	return pos;
+}
+
+wiky_helper.identify_whole_word = function(input) {
+	
+	var s = input.value;
+	var pos = wiky_helper.get_selection(input);
+	// if it does not select anything, we select the current word automatically
+	if (pos.end == pos.start) {
+		while (pos.start >= 0 && s.charAt(pos.start) != ' ' && s.charAt(pos.start) != '\n') pos.start--;
+		pos.start++;
+		
+		while (pos.end < s.length && s.charAt(pos.end) != ' ' && s.charAt(pos.end) != '\n') pos.end++;
+	}
+	
+	return pos;
+}
+
+wiky_helper.wrap2 = function(input,symbols,default_text) {
 	
 	var singleChar = symbols.charAt(0);
 	
