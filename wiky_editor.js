@@ -31,10 +31,16 @@
 				wiky_helper.insert_link(this[0],arguments[1],arguments[2]);
 			}
 			else if (key == 'open_image') {
-				$.wiky_editor_link_dialog_box(this);
+				$.wiky_editor_image_dialog_box(this);
 			}
 			else if (key == 'image') {
-				wiky_helper.insert_link(this[0],arguments[1],arguments[2]);
+				wiky_helper.insert_image(this[0],arguments[1],arguments[2]);
+			}
+			else if (key == 'open_video') {
+				$.wiky_editor_video_dialog_box(this);
+			}
+			else if (key == 'video') {
+				wiky_helper.insert_video(this[0],arguments[1]);
 			}
 		}
 	});
@@ -59,17 +65,79 @@
 	
 	$.wiky_editor_link_dialog_box_insert_link = function() {
 		$($.wiky_editor_instance).wiky_editor_tools('link',$('#wiky_link_dialog_box_url').val(),$('#wiky_link_dialog_box_name').val());
-		$.wiky_editor_close_link_dialog_box();
+		$.wiky_editor_close_dialog_box();
 	}
 	
-	$.wiky_editor_close_link_dialog_box = function(){
+	$.wiky_editor_close_dialog_box = function(){
 		$('#wiky_dialog_box_overlay').hide();
 		$('#wiky_link_dialog_box').hide();
+		$('#wiky_video_dialog_box').hide();
+		$('#wiky_image_dialog_box').hide();
+	}
+	
+	$.wiky_editor_video_dialog_box = function(input) {
+		$.wiky_editor_instance = input;
+		
+		if ($('#wiky_dialog_box_overlay').length == 0) {
+			$("body").append('<div id="wiky_dialog_box_overlay" style="position: absolute; top: 0pt; z-index: 1000; opacity: 0.5; height: 1951px; left: 0pt; width: 100%;background-color:#000000;display:none;"></div>');
+		}
+		
+		if ($('#wiky_video_dialog_box').length == 0) {
+			alert("Please define #wiky_video_dialog_box");
+		}
+		
+		$('#wiky_video_dialog_box_url').val("");
+		
+		$('#wiky_dialog_box_overlay').show();
+		$('#wiky_video_dialog_box').show();
+	}
+	
+	$.wiky_editor_video_dialog_box_insert_video = function() {
+		$($.wiky_editor_instance).wiky_editor_tools('video',$('#wiky_video_dialog_box_url').val());
+		$.wiky_editor_close_dialog_box();
+	}
+	
+	$.wiky_editor_image_dialog_box = function(input) {
+		$.wiky_editor_instance = input;
+		
+		if ($('#wiky_dialog_box_overlay').length == 0) {
+			$("body").append('<div id="wiky_dialog_box_overlay" style="position: absolute; top: 0pt; z-index: 1000; opacity: 0.5; height: 1951px; left: 0pt; width: 100%;background-color:#000000;display:none;"></div>');
+		}
+		
+		if ($('#wiky_image_dialog_box').length == 0) {
+			alert("Please define #wiky_image_dialog_box");
+		}
+		
+		$('#wiky_dialog_box_overlay').show();
+		$('#wiky_image_dialog_box').show();
+	}
+	
+	$.wiky_editor_image_dialog_box_insert_image = function(url,alt) {
+		$($.wiky_editor_instance).wiky_editor_tools('image',url,alt);
+		$.wiky_editor_close_dialog_box();
 	}
 	
 })(jQuery);
 
 wiky_helper = {}
+
+wiky_helper.insert_image = function(input,url,alt) {
+	if (url == undefined || url == "") return;
+	
+	var pos = wiky_helper.get_selection(input);
+	
+	
+	var s = input.value;
+	
+	if (name != "")
+		s = s.substring(0,pos.end) + "[[File:"+url+" "+name+"]"+s.substring(pos.end);
+	else
+		s = s.substring(0,pos.end) + "[[File:"+url+"]]"+s.substring(pos.end);
+		
+	input.value = s;
+	
+}
+
 wiky_helper.insert_link = function(input,url,name) {
 	if (url == undefined || url == "") return;
 	
@@ -82,6 +150,18 @@ wiky_helper.insert_link = function(input,url,name) {
 		s = s.substring(0,pos.end) + "["+url+" "+name+"]"+s.substring(pos.end);
 	else
 		s = s.substring(0,pos.end) + "["+url+"]"+s.substring(pos.end);
+		
+	input.value = s;
+	
+}
+
+wiky_helper.insert_video = function(input,url) {
+	if (url == undefined || url == "") return;
+	
+	var pos = wiky_helper.get_selection(input);
+	
+	var s = input.value;
+	s = s.substring(0,pos.end) + "[[Video:"+url+"]]"+s.substring(pos.end);
 		
 	input.value = s;
 	
