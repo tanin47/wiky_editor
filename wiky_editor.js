@@ -30,7 +30,6 @@
 					
 					var count_sym = wiky_helper.count_wrapper(input,"'",2);
 					
-					
 					if (count_sym.left >= 2 && 
 						count_sym.right >= 2 &&
 						count_sym.left != 3 &&
@@ -109,7 +108,7 @@ wiky_helper.count_beginning_and_end = function(input,sym) {
 	
 	{
 		var count_single_quote = 0;
-		var tmp_pos_start = pos.start;
+		var tmp_pos_start = pos.start-1;
 		while (tmp_pos_start >= 0) {
 			if (s.charAt(tmp_pos_start) == sym) {
 				count_single_quote++;
@@ -165,7 +164,7 @@ wiky_helper.count_wrapper = function(input,sym,min) {
 	
 	{
 		var count_single_quote = 0;
-		var tmp_pos_start = pos.start;
+		var tmp_pos_start = pos.start-1;
 		while (tmp_pos_start >= 0) {
 			if (s.charAt(tmp_pos_start) == sym) {
 				count_single_quote++;
