@@ -4,77 +4,149 @@
 (function($){
 
  	$.fn.extend({ 
- 		
+
  		wiky_editor: function() {
-			return this.each(function() {
-				
-				this.insert_bold = function(input,key) {
-					if (key != undefined && key != 66) return false;
-					
-					var count_sym = wiky_helper.count_wrapper(input,"'",3);
-					
-					if (count_sym.left >= 3 && count_sym.right >= 3) {
-						wiky_helper.unwrap(input, count_sym.pos.start, count_sym.pos.end, "'''", "ตัวหนา");
-					}
-					else {
-						
-						var pos = wiky_helper.identify_whole_word(input);
-						wiky_helper.wrap(input, pos.start, pos.end, "'''", "ตัวหนา");
-					}
-					
-					return true;
-				}
-				
-				this.insert_italic = function(input,key) {
-					if (key != undefined && key != 73) return false;
-					
-					var count_sym = wiky_helper.count_wrapper(input,"'",2);
-					
-					if (count_sym.left >= 2 && 
-						count_sym.right >= 2 &&
-						count_sym.left != 3 &&
-						count_sym.right != 3) {
-					
-						wiky_helper.unwrap(input, count_sym.pos.start, count_sym.pos.end, "''", "ตัวเอียง");
-						
-					} else {
-					
-						var pos = wiky_helper.identify_whole_word(input);
-						wiky_helper.wrap(input, pos.start, pos.end, "''", "ตัวเอียง");
-					}
-					
-					
-					
-					return true;
-				}
-				
-				this.insert_heading = function(input,key) {
-					if (key != undefined && key != 72) return false;
-					
-					var count_sym = wiky_helper.count_beginning_and_end(input,"=");
-					
-					if (count_sym.left >= 3 && count_sym.right >= 3) {
-						wiky_helper.unwrap(input, count_sym.pos.start, count_sym.pos.end, "=", "หัวข้อ");
-					}
-					else if (count_sym.left >= 2 && count_sym.right >= 2) {
-						wiky_helper.unwrap(input, count_sym.pos.start, count_sym.pos.end, "==", "หัวข้อ");
-					} else {
-					
-						var pos = wiky_helper.identify_whole_line(input);
-						wiky_helper.wrap(input, pos.start, pos.end, "===", "หัวข้อ");
-					}
-					
-					
-					return true;
-				}
-				
-				$(this).wiky_base_editor([this.insert_bold,this.insert_italic,this.insert_heading]);
+			
+			var obj = this[0];
+			if (obj.wiky_editor == undefined) {
+				$(obj).wiky_base_editor([wiky_helper.insert_bold, wiky_helper.insert_italic, wiky_helper.insert_heading]);
+			}
+			
+			// IE does not save cursor position, after blurring. Therefore, we save it for them;
+			obj.save_selection_position = {start:0,end:0};
+			$(obj).mouseup(function(){
+				this.save_selection_position = wiky_helper.get_selection(this);
 			});
+			
+		
+		},
+		wiky_editor_tools: function(key) {
+			if (key == 'b') wiky_helper.insert_bold(this[0]);
+			else if (key =='i') wiky_helper.insert_italic(this[0]);
+			else if (key =='h') wiky_helper.insert_heading(this[0]);
+			else if (key == 'open_link') {
+				$.wiky_editor_link_dialog_box(this);
+			}
+			else if (key == 'link') {
+				wiky_helper.insert_link(this[0],arguments[1],arguments[2]);
+			}
+			else if (key == 'open_image') {
+				$.wiky_editor_link_dialog_box(this);
+			}
+			else if (key == 'image') {
+				wiky_helper.insert_link(this[0],arguments[1],arguments[2]);
+			}
 		}
 	});
+	
+	$.wiky_editor_link_dialog_box = function(input) {
+		$.wiky_editor_instance = input;
+		
+		if ($('#wiky_dialog_box_overlay').length == 0) {
+			$("body").append('<div id="wiky_dialog_box_overlay" style="position: absolute; top: 0pt; z-index: 1000; opacity: 0.5; height: 1951px; left: 0pt; width: 100%;background-color:#000000;display:none;"></div>');
+		}
+		
+		if ($('#wiky_link_dialog_box').length == 0) {
+			alert("Please define #wiky_link_dialog_box");
+		}
+		
+		$('#wiky_link_dialog_box_url').val("");
+		$('#wiky_link_dialog_box_name').val("");
+		
+		$('#wiky_dialog_box_overlay').show();
+		$('#wiky_link_dialog_box').show();
+	}
+	
+	$.wiky_editor_link_dialog_box_insert_link = function() {
+		$($.wiky_editor_instance).wiky_editor_tools('link',$('#wiky_link_dialog_box_url').val(),$('#wiky_link_dialog_box_name').val());
+		$.wiky_editor_close_link_dialog_box();
+	}
+	
+	$.wiky_editor_close_link_dialog_box = function(){
+		$('#wiky_dialog_box_overlay').hide();
+		$('#wiky_link_dialog_box').hide();
+	}
+	
 })(jQuery);
 
 wiky_helper = {}
+wiky_helper.insert_link = function(input,url,name) {
+	if (url == undefined || url == "") return;
+	
+	var pos = wiky_helper.get_selection(input);
+	
+	
+	var s = input.value;
+	
+	if (name != "")
+		s = s.substring(0,pos.end) + "["+url+" "+name+"]"+s.substring(pos.end);
+	else
+		s = s.substring(0,pos.end) + "["+url+"]"+s.substring(pos.end);
+		
+	input.value = s;
+	
+}
+
+wiky_helper.insert_bold = function(input,key) {
+	if (key != undefined && key != 66) return false;
+	
+	var count_sym = wiky_helper.count_wrapper(input,"'",3);
+	
+	if (count_sym.left >= 3 && count_sym.right >= 3) {
+		wiky_helper.unwrap(input, count_sym.pos.start, count_sym.pos.end, "'''", "ตัวหนา");
+	}
+	else {
+		
+		var pos = wiky_helper.identify_whole_word(input);
+		wiky_helper.wrap(input, pos.start, pos.end, "'''", "ตัวหนา");
+	}
+	
+	return true;
+}
+
+wiky_helper.insert_italic = function(input,key) {
+	if (key != undefined && key != 73) return false;
+	
+	var count_sym = wiky_helper.count_wrapper(input,"'",2);
+	
+	if (count_sym.left >= 2 && 
+		count_sym.right >= 2 &&
+		count_sym.left != 3 &&
+		count_sym.right != 3) {
+	
+		wiky_helper.unwrap(input, count_sym.pos.start, count_sym.pos.end, "''", "ตัวเอียง");
+		
+	} else {
+	
+		var pos = wiky_helper.identify_whole_word(input);
+		wiky_helper.wrap(input, pos.start, pos.end, "''", "ตัวเอียง");
+	}
+	
+	
+	
+	return true;
+}
+
+wiky_helper.insert_heading = function(input,key) {
+	if (key != undefined && key != 72) return false;
+	
+	var count_sym = wiky_helper.count_beginning_and_end(input,"=");
+	
+	if (count_sym.left >= 3 && count_sym.right >= 3) {
+		wiky_helper.unwrap(input, count_sym.pos.start, count_sym.pos.end, "=", "หัวข้อ");
+	}
+	else if (count_sym.left >= 2 && count_sym.right >= 2) {
+		wiky_helper.unwrap(input, count_sym.pos.start, count_sym.pos.end, "==", "หัวข้อ");
+	} else {
+	
+		var pos = wiky_helper.identify_whole_line(input);
+		wiky_helper.wrap(input, pos.start, pos.end, "===", "หัวข้อ");
+	}
+	
+	
+	return true;
+}
+
 wiky_helper.wrap = function(input, pos_start, pos_end, symbols, default_text){
 	var s = input.value;
 	
@@ -114,7 +186,7 @@ wiky_helper.count_beginning_and_end = function(input,sym) {
 				count_single_quote++;
 			}
 			else {
-				if (s.charAt(tmp_pos_start) == "\n") {
+				if (s.charAt(tmp_pos_start) == "\n" || s.charAt(tmp_pos_start) == "\r") {
 					break;
 				}
 				else {
@@ -137,7 +209,7 @@ wiky_helper.count_beginning_and_end = function(input,sym) {
 				count_single_quote++;
 			}
 			else 
-				if (s.charAt(tmp_pos_end) == "\n") {
+				if (s.charAt(tmp_pos_end) == "\n" || s.charAt(tmp_pos_end) == "\r") {
 					break;
 				}
 				else {
@@ -170,7 +242,7 @@ wiky_helper.count_wrapper = function(input,sym,min) {
 				count_single_quote++;
 			}
 			else {
-				if (s.charAt(tmp_pos_start) == "\n") {
+				if (s.charAt(tmp_pos_start) == "\n" || s.charAt(tmp_pos_start) == "\r") {
 					break;
 				}
 				else {
@@ -198,7 +270,7 @@ wiky_helper.count_wrapper = function(input,sym,min) {
 				count_single_quote++;
 			}
 			else 
-				if (s.charAt(tmp_pos_end) == "\n") {
+				if (s.charAt(tmp_pos_end) == "\n" || s.charAt(tmp_pos_end) == "\r") {
 					break;
 				}
 				else {
@@ -226,10 +298,10 @@ wiky_helper.identify_whole_line = function(input) {
 	var pos = wiky_helper.get_selection(input);
 	
 	// identify the whole line
-	while (pos.start >= 0 && s.charAt(pos.start) != '\n') pos.start--;
+	while (pos.start >= 0 && s.charAt(pos.start) != '\n' && s.charAt(pos.start) != '\r') pos.start--;
 	pos.start++;
 	
-	while (pos.end < s.length && s.charAt(pos.end) != '\n') pos.end++;
+	while (pos.end < s.length && s.charAt(pos.end) != '\n' && s.charAt(pos.end) != '\r') pos.end++;
 
 	return pos;
 }
@@ -240,120 +312,41 @@ wiky_helper.identify_whole_word = function(input) {
 	var pos = wiky_helper.get_selection(input);
 	// if it does not select anything, we select the current word automatically
 	if (pos.end == pos.start) {
-		while (pos.start >= 0 && s.charAt(pos.start) != ' ' && s.charAt(pos.start) != '\n') pos.start--;
+		while (pos.start >= 0 && s.charAt(pos.start) != ' ' && s.charAt(pos.start) != '\n' && s.charAt(pos.start) != '\r') pos.start--;
 		pos.start++;
 		
-		while (pos.end < s.length && s.charAt(pos.end) != ' ' && s.charAt(pos.end) != '\n') pos.end++;
+		while (pos.end < s.length && s.charAt(pos.end) != ' ' && s.charAt(pos.end) != '\n' && s.charAt(pos.end) != '\r') pos.end++;
 	}
 	
 	return pos;
 }
 
-wiky_helper.wrap2 = function(input,symbols,default_text) {
-	
-	var singleChar = symbols.charAt(0);
-	
-	var pos = wiky_helper.get_selection(input);
-					
-	var s = input.value;
-	
-	
-	var add = true;
-	
-	// if it has enclosing symbols, then we remove it. Otherwise add it.
-	var found_start = false;
-	var found_end = false;
-	{
-		var count_single_quote = 0;
-		var tmp_pos_start = pos.start;
-		while (tmp_pos_start >= 0) {
-			if (s.charAt(tmp_pos_start) == singleChar) {
-				count_single_quote++;
-			}
-			else 
-				if (s.charAt(tmp_pos_start) == "\n") {
-					break;
-				}
-				else {
-					count_single_quote = 0;
-				}
-			
-			if (count_single_quote == symbols.length) {
-				pos.start = tmp_pos_start + symbols.length;
-				found_start = true;
-				break;
-			}
-			
-			tmp_pos_start--;
-		}
-	}
-	
-	{
-		var count_single_quote = 0;
-		var tmp_pos_end = pos.end;
-		while (tmp_pos_end < s.length) {
-			if (s.charAt(tmp_pos_end) == singleChar) {
-				count_single_quote++;
-			}
-			else 
-				if (s.charAt(tmp_pos_end) == "\n") {
-					break;
-				}
-				else {
-					count_single_quote = 0;
-				}
-			
-			if (count_single_quote == symbols.length) {
-				pos.end = tmp_pos_end - symbols.length + 1;
-				found_end = true;
-				break;
-			}
-			
-			tmp_pos_end++;
-		}
-	}
-	
-	if (found_start == true && found_end == true) add = false;
-	
-						
-	// if it does not select anything, we select the current word automatically
-	if (add == true && pos.end == pos.start) {
-		while (pos.start >= 0 && s.charAt(pos.start) != ' ' && s.charAt(pos.start) != '\n') pos.start--;
-		pos.start++;
-		
-		while (pos.end < s.length && s.charAt(pos.end) != ' ' && s.charAt(pos.end) != '\n') pos.end++;
-	}
-	
-	if (add) {
-		if (pos.end > pos.start) {
-			s = s.substring(0, pos.start) + ""+symbols+"" + s.substring(pos.start, pos.end) + ""+symbols+"" + s.substring(pos.end);
-		}
-		else {
-			s = s.substring(0, pos.start) + ""+symbols+"" + default_text + ""+symbols+"" + s.substring(pos.end);
-			pos.end = pos.start + default_text.length;
-		}
-		
-		input.value = s;
-		wiky_helper.set_selection(input, pos.start + symbols.length, pos.end + symbols.length);
-		
-	} else {
-		s = s.substring(0, pos.start - symbols.length) + s.substring(pos.start, pos.end) + s.substring(pos.end + symbols.length);
-		
-		input.value = s;
-		wiky_helper.set_selection(input,pos.start-symbols.length,pos.end-symbols.length);
-	}
-}
 
-wiky_helper.set_selection = function(el,start,end) {
-    if (el.setSelectionRange) {
-        el.focus();
-        el.setSelectionRange(start, end);
-    } else if (el.createTextRange) {
-        var range = el.createTextRange();
-        range.collapse(true);
-        range.moveEnd('character', end);
-        range.moveStart('character', start);
-        range.select();
+wiky_helper.set_selection = function(e,start_pos,end_pos) {
+
+    //Mozilla and DOM 3.0
+    if('selectionStart' in e)
+    {
+        e.focus();
+        e.selectionStart = start_pos;
+        e.selectionEnd = end_pos;
+    }
+    //IE
+    else if(document.selection)
+    {
+        e.focus();
+        var tr = e.createTextRange();
+
+        //Fix IE from counting the newline characters as two seperate characters
+        var stop_it = start_pos;
+        for (i=0; i < stop_it; i++) if( e.value[i].search(/[\r\n]/) != -1 ) start_pos = start_pos - .5;
+        stop_it = end_pos;
+        for (i=0; i < stop_it; i++) if( e.value[i].search(/[\r\n]/) != -1 ) end_pos = end_pos - .5;
+
+        tr.moveEnd('textedit',-1);
+        tr.moveStart('character',start_pos);
+        tr.moveEnd('character',end_pos - start_pos);
+        tr.select();
     }
 }
 
@@ -394,7 +387,9 @@ wiky_helper.get_selection = function(el) {
                     end += normalizedValue.slice(0, end).split("\n").length - 1;
                 }
             }
-        }
+        } else {
+			return el.save_selection_position;
+		}
     }
 
     return {
