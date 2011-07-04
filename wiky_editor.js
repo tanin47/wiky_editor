@@ -9,7 +9,7 @@
 			
 			var obj = this[0];
 			if (obj.wiky_editor == undefined) {
-				$(obj).wiky_base_editor([wiky_helper.insert_bold, wiky_helper.insert_italic, wiky_helper.insert_heading]);
+				$(obj).wiky_base_editor({'b':wiky_helper.insert_bold, 'i':wiky_helper.insert_italic, 'h':wiky_helper.insert_heading});
 			}
 			
 			// IE does not save cursor position, after blurring. Therefore, we save it for them;
@@ -21,6 +21,9 @@
 		
 		},
 		wiky_editor_tools: function(key) {
+			this.wiky_editor.save_history({which:key},true);
+			
+			
 			if (key == 'b') wiky_helper.insert_bold(this[0]);
 			else if (key =='i') wiky_helper.insert_italic(this[0]);
 			else if (key =='h') wiky_helper.insert_heading(this[0]);
@@ -45,12 +48,18 @@
 		}
 	});
 	
+	$.wiky_editor_open_overlay = function() {
+		if ($('#wiky_dialog_box_overlay').length == 0) {
+			$("body").append('<div id="wiky_dialog_box_overlay" class="wiky_editor_overlay"></div>');
+		}
+		     
+
+	}
+	
 	$.wiky_editor_link_dialog_box = function(input) {
 		$.wiky_editor_instance = input;
 		
-		if ($('#wiky_dialog_box_overlay').length == 0) {
-			$("body").append('<div id="wiky_dialog_box_overlay" style="position: absolute; top: 0pt; z-index: 1000; opacity: 0.5; height: 1951px; left: 0pt; width: 100%;background-color:#000000;display:none;"></div>');
-		}
+		$.wiky_editor_open_overlay();
 		
 		if ($('#wiky_link_dialog_box').length == 0) {
 			alert("Please define #wiky_link_dialog_box");
@@ -78,9 +87,7 @@
 	$.wiky_editor_video_dialog_box = function(input) {
 		$.wiky_editor_instance = input;
 		
-		if ($('#wiky_dialog_box_overlay').length == 0) {
-			$("body").append('<div id="wiky_dialog_box_overlay" style="position: absolute; top: 0pt; z-index: 1000; opacity: 0.5; height: 1951px; left: 0pt; width: 100%;background-color:#000000;display:none;"></div>');
-		}
+		$.wiky_editor_open_overlay();
 		
 		if ($('#wiky_video_dialog_box').length == 0) {
 			alert("Please define #wiky_video_dialog_box");
@@ -100,9 +107,7 @@
 	$.wiky_editor_image_dialog_box = function(input) {
 		$.wiky_editor_instance = input;
 		
-		if ($('#wiky_dialog_box_overlay').length == 0) {
-			$("body").append('<div id="wiky_dialog_box_overlay" style="position: absolute; top: 0pt; z-index: 1000; opacity: 0.5; height: 1951px; left: 0pt; width: 100%;background-color:#000000;display:none;"></div>');
-		}
+		$.wiky_editor_open_overlay();
 		
 		if ($('#wiky_image_dialog_box').length == 0) {
 			alert("Please define #wiky_image_dialog_box");

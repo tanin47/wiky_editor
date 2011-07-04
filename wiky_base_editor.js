@@ -15,7 +15,7 @@
 				this.wiky_editor.current_pointer = 0;
 				this.wiky_editor.just_undo_redo = false;
 				this.wiky_editor.just_did_special_action = false;
-				this.wiky_editor.handles = [];
+				this.wiky_editor.handles = {};
 				
 				if (handles != undefined) {
 					this.wiky_editor.handles = handles;
@@ -85,7 +85,7 @@
 								this.data.pop();
 							}
 							
-//							console.log(this.data);
+							console.log(this.data);
 						}
 						
 						this.action_count = 0;
@@ -122,13 +122,13 @@
 						} else {
 							doSomething = false;
 							
-							for (var i=0;i<this.wiky_editor.handles.length;i++) {
-								if (this.wiky_editor.handles[i](this,e.which)) {
-									this.wiky_editor.save_history(e);
-									doSomething = true;
-									this.wiky_editor.just_did_special_action = true;
-									break;
-								}
+							if (this.wiky_editor.handles[String.fromCharCode(e.which).toLowerCase()] != undefined) {
+								
+								this.wiky_editor.save_history(e,true);
+								this.wiky_editor.handles[String.fromCharCode(e.which).toLowerCase()](this);
+								doSomething = true;
+								this.wiky_editor.just_did_special_action = true;
+								
 							}
 							
 							if (e.which == vKey) {

@@ -28,3 +28,19 @@
 
 }
 
+.wiky_editor_overlay {
+	position: absolute; 
+	top: 0pt; 
+	z-index: 1000; 
+	height: 1951px; 
+	left: 0pt; 
+	width: 100%;
+	background-color:#000000;
+	display:none;
+	
+	-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+	filter: alpha(opacity=50);
+	-moz-opacity:0.5;
+	opacity: 0.5;
+}
+
