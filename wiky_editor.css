@@ -44,3 +44,55 @@
 	opacity: 0.5;
 }
 
+.wiky_uploader_button {
+	-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+	filter: alpha(opacity=0);
+	-moz-opacity:0.0;
+	opacity: 0.0;
+}
+
+.wiky_thumbnail_unit {
+	display:inline-block;
+	width:80px;
+	height:100px;
+	margin:10px 10px 10px 10px;
+}
+
+.wiky_thumbnail_unit > .wiky_thumbnail_unit_img {
+	display:block;
+	width:80px;
+	height:80px;
+	border:0px solid #CCCCCC;
+	cursor: pointer;
+	margin:0px 0px 0px 0px;
+}
+.wiky_thumbnail_unit.selected {
+	border:5px solid #000000;
+	margin:5px 5px 5px 5px;
+	background-color:#000000;
+	color:#FFFFFF;
+}
+
+
+.wiky_thumbnail_unit > .wiky_thumbnail_unit_text {
+	display:block;
+	width:80px;
+	height:20px;
+	overflow:hidden;
+	line-height:20px;
+	font-size:12px;
+	margin:0px 0px 0px 0px;
+}
+
+.wiky_thumbnail_unit_img > .wiky_thumbnail_unit_img_progress {
+	display:inline-block;
+	width:80px;
+	background-color:orange;
+}
+
+.wiky_thumbnail_unit_img > img {
+	width:80px;
+	height:80px;
+	border: 0px solid #000000;
+	margin:0px 0px 0px 0px;
+}

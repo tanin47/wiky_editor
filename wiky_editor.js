@@ -18,10 +18,44 @@
 				this.save_selection_position = wiky_helper.get_selection(this);
 			});
 			
+			$("#wiky_image_container").delegate(".wiky_thumbnail_unit", "click", function(){
+				$(this).toggleClass("selected");
+			});
+			
+			$('#wiky_upload_button').wiky_uploader({
+													mouseover_class:"button_hover",
+													mousedown_class:"button_down",
+													debug:true,
+													onSubmit: function(fileId, fileName){
+														$('#wiky_image_container').prepend('\
+															<span class="wiky_thumbnail_unit" id="wiky_thumbnail_unit_'+fileId+'">\
+																<span class="wiky_thumbnail_unit_img">\
+																	<span class="wiky_thumbnail_unit_img_progress"></span>\
+																</span>\
+																<span class="wiky_thumbnail_unit_text">'+fileName+'</span>\
+															</span>\
+														');
+													},
+											        onProgress: function(fileId, fileName, loaded, total){
+														
+														progress_span = $('#wiky_thumbnail_unit_'+fileId).find('.wiky_thumbnail_unit_img_progress');
+														progress_span = progress_span[0];
+												
+													},
+											        onComplete: function(fileId, fileName, responseJSON){
+														$('#wiky_thumbnail_unit_'+fileId).find('.wiky_thumbnail_unit_img_progress').remove();
+														
+														$('#wiky_thumbnail_unit_'+fileId).children('.wiky_thumbnail_unit_img').html('<img src="http://image.dek-d.com/23/2362526/105276008"/>');
+													},
+											        onCancel: function(id, fileName){
+														$('#wiky_thumbnail_unit_'+fileId).fadeOut(function() {$(this).remove();});
+													}
+												});
+			
 		
 		},
 		wiky_editor_tools: function(key) {
-			this.wiky_editor.save_history({which:key},true);
+			this[0].wiky_editor.save_history({which:key},true);
 			
 			
 			if (key == 'b') wiky_helper.insert_bold(this[0]);
@@ -118,7 +152,17 @@
 	}
 	
 	$.wiky_editor_image_dialog_box_insert_image = function(url,alt) {
-		$($.wiky_editor_instance).wiky_editor_tools('image',url,alt);
+		
+		var spans = $('#wiky_image_container').children('span');
+		
+		for (var i=0;i<spans.length;i++) {
+			if ($(spans[i]).hasClass('selected') && $(spans[i]).find('img').length > 0) {
+				url = $(spans[i]).find('img')[0].src;
+				$($.wiky_editor_instance).wiky_editor_tools('image',url);
+				$(spans[i]).removeClass('selected');
+			}
+		}
+		
 		$.wiky_editor_close_dialog_box();
 	}
 	
@@ -135,9 +179,9 @@ wiky_helper.insert_image = function(input,url,alt) {
 	var s = input.value;
 	
 	if (name != "")
-		s = s.substring(0,pos.end) + "[[File:"+url+" "+name+"]"+s.substring(pos.end);
+		s = s.substring(0,pos.end) + "\n[[File:"+url+" "+name+"]\n"+s.substring(pos.end);
 	else
-		s = s.substring(0,pos.end) + "[[File:"+url+"]]"+s.substring(pos.end);
+		s = s.substring(0,pos.end) + "\n[[File:"+url+"]]\n"+s.substring(pos.end);
 		
 	input.value = s;
 	
@@ -166,7 +210,7 @@ wiky_helper.insert_video = function(input,url) {
 	var pos = wiky_helper.get_selection(input);
 	
 	var s = input.value;
-	s = s.substring(0,pos.end) + "[[Video:"+url+"]]"+s.substring(pos.end);
+	s = s.substring(0,pos.end) + "\n[[Video:"+url+"]]\n"+s.substring(pos.end);
 		
 	input.value = s;
 	
