@@ -20,6 +20,7 @@ There are 2 libraries:
      - Ctrl+B = toggle bold
      - Ctrl+I = toggle italic
      - Ctrl+h = toggle heading
+     - You can have toolbar for adding links, videos and images
 
 How to use it
 -------------------
@@ -34,6 +35,7 @@ Supported Syntax
 === Subheading ===
 [http://www.url.com Name of URLs]
 [[File:http://www.url.com/image.png Alternative Text]]
+[[Video:http://www.youtube.com/watch?v=qwe23rgWEw]]
  -------------------- (Horizontal line)
 : (Indentation)
 # Ordered bullet point
