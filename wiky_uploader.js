@@ -27,6 +27,9 @@
 				// target upload path
 				action: "http://www.google.com",
 				
+				// multiple
+				multiple: true,
+				
 				// debug message
 				debug: false,
 				
@@ -298,8 +301,11 @@ wiky_uploader.prototype = {
 	    var input = document.createElement("input");
 	    input.setAttribute('type', 'file');
 	    input.setAttribute('name', name);
-		input.setAttribute('multiple', 'multiple');
-	    
+		
+		if (self._options.multiple == true) {
+			input.setAttribute('multiple', 'multiple');
+		}
+		
 	    $(input).css({
 	        'position' : 'absolute',
 	        // in Opera only 'browse' button

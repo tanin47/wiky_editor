@@ -85,7 +85,7 @@
 								this.data.pop();
 							}
 							
-							console.log(this.data);
+							//console.log(this.data);
 						}
 						
 						this.action_count = 0;
