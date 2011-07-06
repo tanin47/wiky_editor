@@ -22,7 +22,7 @@
 				params: {},
 				
 				// name of input
-				name: "file",
+				name: "Filedata",
 				
 				// target upload path
 				action: "http://www.google.com",
@@ -213,7 +213,8 @@ wiky_uploader.prototype = {
 
         var handler = new qq[handlerClass]({
             debug: this._options.debug,
-            action: this._options.action,         
+            action: this._options.action,  
+			name: this._options.name,       
             maxConnections: this._options.maxConnections,   
             onProgress: function(id, fileName, loaded, total){                
                 self._onProgress(id, fileName, loaded, total);
@@ -506,6 +507,7 @@ qq.UploadHandlerAbstract = function(o){
     this._options = {
         debug: false,
         action: '/upload.php',
+		name:'qqfile',
         // maximum number of concurrent uploads        
         maxConnections: 999,
         onProgress: function(id, fileName, loaded, total){},
@@ -855,7 +857,7 @@ $.extend(qq.UploadHandlerXhr.prototype, {
 
         // build query string
         params = params || {};
-        params['qqfile'] = name;
+        params[this._options.name] = name;
         var queryString = wiky_uploader_helper.obj2url(params, this._options.action);
 
         xhr.open("POST", queryString, true);
