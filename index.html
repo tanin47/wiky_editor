@@ -3,9 +3,11 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<script type="text/javascript" src="jquery-1.4.2.min.js"></script>
+		<script type="text/javascript" src="wiky.js"></script>
 		<script type="text/javascript" src="wiky_base_editor.js"></script>
 		<script type="text/javascript" src="wiky_editor.js"></script>
 		<script type="text/javascript" src="wiky_uploader.js"></script>
+		<script type="text/javascript" src="wiky.js"></script>
 		<link href="wiky_editor.css" type="text/css" rel="stylesheet">
 		<title>Untitled Document</title>
 		<style>
@@ -27,6 +29,10 @@
 		<input type="button" onclick="$('#textarea').wiky_editor_tools('open_video');" value="Video">
 		<br/>
 		<textarea id="textarea" style="width:500px;height:200px;"></textarea><br/>
+		<hr/>
+		<span id="preview_area">
+			
+		</span>
 		<div id="wiky_link_dialog_box" class="wiky_link_dialog_box" style="position: fixed; width: 400px; z-index: 1001; top: 50%; left: 50%; display: block; margin-top: -75.5px; margin-left: -203px;display:none;">
 			<div style="display:block;">
 				Link<br/>
@@ -59,6 +65,6 @@
 </html>
 <script language="javascript">
 
-	$('#textarea').wiky_editor();
+	$('#textarea').wiky_editor({preview_panel:$("#preview_area")[0]});
 	
 </script>

@@ -13,6 +13,16 @@
 (function($){
 
  	$.fn.extend({ 
+	
+		wiky_uploader_tools: function() {
+			var self = this[0];
+			
+			return {
+				cancel: function(fileId) {
+					self._wiky_uploader._handler.cancel(fileId);
+				}
+			};
+		},
 
  		wiky_uploader: function(options) {
 			
@@ -22,10 +32,13 @@
 				params: {},
 				
 				// name of input
-				name: "file",
+				name: "Filedata",
 				
 				// target upload path
 				action: "http://www.google.com",
+				
+				// multiple
+				multiple: true,
 				
 				// debug message
 				debug: false,
@@ -210,7 +223,8 @@ wiky_uploader.prototype = {
 
         var handler = new qq[handlerClass]({
             debug: this._options.debug,
-            action: this._options.action,         
+            action: this._options.action,  
+			name: this._options.name,       
             maxConnections: this._options.maxConnections,   
             onProgress: function(id, fileName, loaded, total){                
                 self._onProgress(id, fileName, loaded, total);
@@ -298,8 +312,11 @@ wiky_uploader.prototype = {
 	    var input = document.createElement("input");
 	    input.setAttribute('type', 'file');
 	    input.setAttribute('name', name);
-		input.setAttribute('multiple', 'multiple');
-	    
+		
+		if (self._options.multiple == true) {
+			input.setAttribute('multiple', 'multiple');
+		}
+		
 	    $(input).css({
 	        'position' : 'absolute',
 	        // in Opera only 'browse' button
@@ -500,6 +517,7 @@ qq.UploadHandlerAbstract = function(o){
     this._options = {
         debug: false,
         action: '/upload.php',
+		name:'qqfile',
         // maximum number of concurrent uploads        
         maxConnections: 999,
         onProgress: function(id, fileName, loaded, total){},
@@ -849,7 +867,7 @@ $.extend(qq.UploadHandlerXhr.prototype, {
 
         // build query string
         params = params || {};
-        params['qqfile'] = name;
+        params[this._options.name] = name;
         var queryString = wiky_uploader_helper.obj2url(params, this._options.action);
 
         xhr.open("POST", queryString, true);
