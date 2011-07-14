@@ -37,7 +37,7 @@
 	border-left-color: #FFFFFF;
 	padding: 10px;
 }
-.row{
+.wiky_dialog_box_row{
 	float: left;
 	width: 100%;
 	margin-left: 6px;
@@ -250,7 +250,7 @@
 /* ============================================================================================================
 ======= TOOL BAR STYLE ========================================================================================
  ============================================================================================================*/
-.button_style{
+.wiky_toolbar{
 	content:"Press Me!!"
 	float: left;
 	outline: none;
@@ -295,7 +295,7 @@
 	padding-left: 2px;
 	display: inline-block;
 }
-.bold_button{
+.wiky_toolbar > .bold_button{
 	background-color:transparent;
 	background-repeat: no-repeat;
 	height: 20px;
@@ -309,9 +309,17 @@
 	border-right-color: #a5a5a5;
 	float: left;
 	cursor:pointer;
+	padding: 0px 0px 0px 0px;
 }
-.italic_button, .h2_button, .h3_button, .order-list_button, .unorder-list_button, .indent-left_button, 
-.indent-right_button, .link_button, .image_button{
+.wiky_toolbar > .italic_button, 
+.wiky_toolbar > .h2_button, 
+.wiky_toolbar > .h3_button, 
+.wiky_toolbar > .order-list_button, 
+.wiky_toolbar > .unorder-list_button, 
+.wiky_toolbar > .indent-left_button, 
+.wiky_toolbar > .indent-right_button, 
+.wiky_toolbar > .link_button, 
+.wiky_toolbar > .image_button{
 	background-color:transparent;
 	background-repeat: no-repeat;
 	height: 20px;
@@ -327,8 +335,9 @@
 	cursor:pointer;
 	border-left-width: 1px;
 	border-left-color: #f5f5f5;
+	padding: 0px 0px 0px 0px;
 }
-.vdo_button{
+.wiky_toolbar > .vdo_button{
 	background-color:transparent;
 	background-repeat: no-repeat;
 	height: 20px;
@@ -342,100 +351,117 @@
 	cursor:pointer;
 	border-left-width: 1px;
 	border-left-color: #f5f5f5;
+	padding: 0px 0px 0px 0px;
 }
-.bold_button:hover, .italic_button:hover, .h2_button:hover, .h3_button:hover, .order-list_button:hover, 
-.unorder-list_button:hover, .indent-left_button:hover, .indent-right_button:hover, .link_button:hover, 
-.image_button:hover, .vdo_button:hover{
+.wiky_toolbar > .bold_button:hover, 
+.wiky_toolbar > .italic_button:hover, 
+.wiky_toolbar > .h2_button:hover, 
+.wiky_toolbar > .h3_button:hover, 
+.wiky_toolbar > .order-list_button:hover, 
+.wiky_toolbar > .unorder-list_button:hover, 
+.wiky_toolbar > .indent-left_button:hover, 
+.wiky_toolbar > .indent-right_button:hover, 
+.wiky_toolbar > .link_button:hover, 
+.wiky_toolbar > .image_button:hover, 
+.wiky_toolbar > .vdo_button:hover{
 	text-decoration:none;
 	background-color: #CCC;
 }
-.bold_button:active, .italic_button:active, .h2_button:active, .h3_button:active, .order-list_button:active, 
-.unorder-list_button:active, .indent-left_button:active, .indent-right_button:active, .link_button:active, 
-.image_button:active, .vdo_button:active{
+.wiky_toolbar > .bold_button:active, 
+.wiky_toolbar > .italic_button:active, 
+.wiky_toolbar > .h2_button:active, 
+.wiky_toolbar > .h3_button:active, 
+.wiky_toolbar > .order-list_button:active, 
+.wiky_toolbar > .unorder-list_button:active, 
+.wiky_toolbar > .indent-left_button:active, 
+.wiky_toolbar > .indent-right_button:active, 
+.wiky_toolbar > .link_button:active, 
+.wiky_toolbar > .image_button:active, 
+.wiky_toolbar > .vdo_button:active{
 	text-decoration:none;
 	background-image: url(icon.png);
 	background-color: #888;
 	
 }
-.bold_button{
+.wiky_toolbar > .bold_button{
 	background-position: 0px 0px;
 }
-.bold_button:active{
+.wiky_toolbar > .bold_button:active{
 	background-position:0px -20px;
 }
-.italic_button{
+.wiky_toolbar > .italic_button{
 	background-position: -30px 0px;
 }
-.italic_button:active{
+.wiky_toolbar > .italic_button:active{
 	background-position:-30px -20px;
 }
-.h2_button{
+.wiky_toolbar > .h2_button{
 	width:25px;
 	background-position: -58px 0px;
 }
-.h2_button:active{
+.wiky_toolbar > .h2_button:active{
 	background-position:-58px -20px;
 }
-.h3_button{
+.wiky_toolbar > .h3_button{
 	width:25px;
 	background-position: -88px 0px;
 }
-.h3_button:active{
+.wiky_toolbar > .h3_button:active{
 	background-position:-88px -20px;
 }
-.order-list_button{
+.wiky_toolbar > .order-list_button{
 	width:25px;
 	background-position: -120px 0px;
 }
-.order-list_button:active{
+.wiky_toolbar > .order-list_button:active{
 	background-position:-120px -20px;
 }
-.unorder-list_button{
+.wiky_toolbar > .unorder-list_button{
 	width:25px;
 	background-position: -150px 0px;
 }
-.unorder-list_button:active{
+.wiky_toolbar > .unorder-list_button:active{
 	background-position:-150px -20px;
 }
-.indent-left_button{
+.wiky_toolbar > .indent-left_button{
 	width:25px;
 	background-position: -178px 0px;
 }
-.indent-left_button:active{
+.wiky_toolbar > .indent-left_button:active{
 	background-position:-178px -20px;
 }
-.indent-right_button{
+.wiky_toolbar > .indent-right_button{
 	width:25px;
 	background-position: -208px 0px;
 }
-.indent-right_button:active{
+.wiky_toolbar > .indent-right_button:active{
 	background-position:-208px -20px;
 }
-.link_button{
+.wiky_toolbar > .link_button{
 	width:25px;
 	background-position: -238px 0px;
 }
-.link_button:active{
+.wiky_toolbar > .link_button:active{
 	background-position:-238px -20px;
 }
-.image_button{
+.wiky_toolbar > .image_button{
 	width:25px;
 	background-position: -298px 0px;
 }
-.image_button:active{
+.wiky_toolbar > .image_button:active{
 	background-position:-298px -20px;
 }
-.vdo_button{
+.wiky_toolbar > .vdo_button{
 	width:25px;
 	background-position: -268px 0px;
 }
-.vdo_button:active{
+.wiky_toolbar > .vdo_button:active{
 	background-position:-268px -20px;
 }
 /* ============================================================================================================================
 == FORM STRUCTURE
 ** ============================================================================================================================ */
-.textbox_input{
+.wiky_dialog_textbox_input{
 	float:left;
 	border: 1px solid #BBB;
 	box-shadow: 0 1px 0 #BBBBBB;
@@ -459,17 +485,17 @@
 	font-weight: normal;
 	margin-left:4px;
 }
-.textbox_input::-webkit-input-placeholder {
+.wiky_dialog_textbox_input::-webkit-input-placeholder {
     color: #CCC;
 }
-.textbox_input:-moz-placeholder {
+.wiky_dialog_textbox_input:-moz-placeholder {
     color: #CCC;
 }
-.textbox_input:hover{
+.wiky_dialog_textbox_input:hover{
 	background: none repeat scroll 0 0 #EEEEEE;
     color: #444;
 }
-.textbox_input:focus{
+.wiky_dialog_textbox_input:focus{
 	background: none repeat scroll 0 0 #EEEEEE;
     border: 1px solid #DDDDDD;
     color: #333;
@@ -477,7 +503,7 @@
     text-shadow: 0px 1px 0 #FFFFFF;
 	font-weight:bold;
 }
-.areatext_input{
+.wiky_textarea{
 	font-family: "Helvetica Neue", Arial, Helvetica, 'Liberation Sans', FreeSans, sans-serif;
 	font-size: 13px;
 	line-height: 1.4em;
@@ -500,17 +526,17 @@
 	font-size: 14px;
 	font-weight: 400;
 }
-.areatext_input::-webkit-input-placeholder {
+.wiky_textarea::-webkit-input-placeholder {
     color: #CCC;
 }
-.areatext_input:-moz-placeholder {
+.wiky_textarea:-moz-placeholder {
     color: #CCC;
 }
-.areatext_input:hover{
+.wiky_textarea:hover{
 	background: none repeat scroll 0 0 #EEEEEE;
     color: #444;
 }
-.areatext_input:focus{
+.wiky_textarea:focus{
 	background: none repeat scroll 0 0 #EEEEEE;
 	border: 1px solid #DDDDDD;
 	color: #333;
