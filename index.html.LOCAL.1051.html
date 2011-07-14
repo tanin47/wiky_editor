@@ -3,11 +3,9 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<script type="text/javascript" src="jquery-1.4.2.min.js"></script>
-		<script type="text/javascript" src="wiky.js"></script>
 		<script type="text/javascript" src="wiky_base_editor.js"></script>
 		<script type="text/javascript" src="wiky_editor.js"></script>
 		<script type="text/javascript" src="wiky_uploader.js"></script>
-		<script type="text/javascript" src="wiky.js"></script>
 		<link href="wiky_editor.css" type="text/css" rel="stylesheet">
 		<title>Untitled Document</title>
 		<style>
@@ -36,10 +34,7 @@
 		</span>
 		<br/>
 		<textarea id="textarea" placeholder="Your Content Here" class="areatext_input" style="width:500px;height:200px;"></textarea><br/>
-		<hr/>
-		<span id="preview_area">
-			
-		</span>
+		
 		<div id="wiky_link_dialog_box" class="wiky_link_dialog_box" style="position: fixed; width: 400px; z-index: 1001; top: 50%; left: 50%; display: block; margin-top: -75.5px; margin-left: -203px;display:none;">
 			<div style="display:block;">
 				<h1>
@@ -98,6 +93,6 @@
 </html>
 <script language="javascript">
 
-	$('#textarea').wiky_editor({preview_panel:$("#preview_area")[0]});
+	$('#textarea').wiky_editor();
 	
 </script>

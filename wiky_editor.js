@@ -5,11 +5,41 @@
 
  	$.fn.extend({ 
 
- 		wiky_editor: function() {
+ 		wiky_editor: function(options) {
+			
+			if (options == undefined) options = {};
+
+			this[0].options = {default_bold_text:"Bold text",
+							default_italic_text:"Italic text",
+							default_heading_text:"Heading",
+							preview_panel:null,
+							preview_timeout:1000}
+							
+			$.extend(this[0].options,options);
 			
 			var obj = this[0];
 			if (obj.wiky_editor == undefined) {
 				$(obj).wiky_base_editor({'b':wiky_helper.insert_bold, 'i':wiky_helper.insert_italic, 'h':wiky_helper.insert_heading});
+			}
+			
+			// preview on-the-fly
+			if (this[0].options.preview_panel != null) {
+				this[0].preview_id = 0;
+				
+				$(this[0]).keyup(function() {
+					this.preview_id++;
+					
+					var obj = this;
+					var this_preview_id = obj.preview_id;
+					setTimeout(function() { obj.update_view(this_preview_id); },obj.options.preview_timeout);
+				});
+				
+			}
+			
+			this[0].update_view = function(preview_id) {
+				if (preview_id != undefined && preview_id != this.preview_id) return;
+				
+				$(this.options.preview_panel).html(wiky.process($(this).val()));
 			}
 			
 			// IE does not save cursor position, after blurring. Therefore, we save it for them;
@@ -177,13 +207,20 @@ wiky_helper.insert_image = function(input,url,alt) {
 	
 	
 	var s = input.value;
+	var inside = "";
 	
 	if (name != "")
-		s = s.substring(0,pos.end) + "\n[[File:"+url+" "+name+"]\n"+s.substring(pos.end);
+		inside = "[[File:"+url+" "+name+"]";
 	else
-		s = s.substring(0,pos.end) + "\n[[File:"+url+"]]\n"+s.substring(pos.end);
+		inside = "[[File:"+url+"]]";
 		
-	input.value = s;
+	prefix = s.substring(0,pos.end).replace(/\r?\n$/,"");
+	suffix = s.substring(pos.end).replace(/^\r?\n/,"");
+		
+	input.value =  prefix + "\n" + inside + "\n" + suffix;
+	
+	input.update_view();
+	wiky_helper.set_selection(input,prefix.length + 1 + inside.length+1,prefix.length + 1 + inside.length+1);
 	
 }
 
@@ -194,13 +231,21 @@ wiky_helper.insert_link = function(input,url,name) {
 	
 	
 	var s = input.value;
+	inside = ""
 	
 	if (name != "")
-		s = s.substring(0,pos.end) + "["+url+" "+name+"]"+s.substring(pos.end);
+		inside = "["+url+" "+name+"]";
 	else
-		s = s.substring(0,pos.end) + "["+url+"]"+s.substring(pos.end);
-		
-	input.value = s;
+		inside = "["+url+"]";
+	
+	
+	prefix = s.substring(0,pos.end);
+	suffix = s.substring(pos.end);
+	input.value = prefix + "" + inside + "" + suffix;
+	
+	
+	input.update_view();
+	wiky_helper.set_selection(input,pos.end + inside.length,pos.end + inside.length);
 	
 }
 
@@ -210,9 +255,15 @@ wiky_helper.insert_video = function(input,url) {
 	var pos = wiky_helper.get_selection(input);
 	
 	var s = input.value;
-	s = s.substring(0,pos.end) + "\n[[Video:"+url+"]]\n"+s.substring(pos.end);
+	prefix = s.substring(0,pos.end).replace(/\r?\n$/,"");
+	suffix = s.substring(pos.end).replace(/^\r?\n/,"");
+	inside =  "[[Video:"+url+"]]";
 		
-	input.value = s;
+	input.value = prefix + "\n" + inside + "\n" + suffix;
+	
+	input.update_view();
+	
+	wiky_helper.set_selection(input,prefix.length + 1 + inside.length+1,prefix.length + 1 + inside.length+1);
 	
 }
 
@@ -222,13 +273,14 @@ wiky_helper.insert_bold = function(input,key) {
 	var count_sym = wiky_helper.count_wrapper(input,"'",3);
 	
 	if (count_sym.left >= 3 && count_sym.right >= 3) {
-		wiky_helper.unwrap(input, count_sym.pos.start, count_sym.pos.end, "'''", "ตัวหนา");
+		wiky_helper.unwrap(input, count_sym.pos.start, count_sym.pos.end, "'''", input.options.default_bold_text);
 	}
 	else {
 		
 		var pos = wiky_helper.identify_whole_word(input);
-		wiky_helper.wrap(input, pos.start, pos.end, "'''", "ตัวหนา");
+		wiky_helper.wrap(input, pos.start, pos.end, "'''", input.options.default_bold_text);
 	}
+	
 	
 	return true;
 }
@@ -243,14 +295,13 @@ wiky_helper.insert_italic = function(input,key) {
 		count_sym.left != 3 &&
 		count_sym.right != 3) {
 	
-		wiky_helper.unwrap(input, count_sym.pos.start, count_sym.pos.end, "''", "ตัวเอียง");
+		wiky_helper.unwrap(input, count_sym.pos.start, count_sym.pos.end, "''", input.options.default_italic_text);
 		
 	} else {
 	
 		var pos = wiky_helper.identify_whole_word(input);
-		wiky_helper.wrap(input, pos.start, pos.end, "''", "ตัวเอียง");
+		wiky_helper.wrap(input, pos.start, pos.end, "''", input.options.default_italic_text);
 	}
-	
 	
 	
 	return true;
@@ -262,16 +313,15 @@ wiky_helper.insert_heading = function(input,key) {
 	var count_sym = wiky_helper.count_beginning_and_end(input,"=");
 	
 	if (count_sym.left >= 3 && count_sym.right >= 3) {
-		wiky_helper.unwrap(input, count_sym.pos.start, count_sym.pos.end, "=", "หัวข้อ");
+		wiky_helper.unwrap(input, count_sym.pos.start, count_sym.pos.end, "=", input.options.default_heading_text);
 	}
 	else if (count_sym.left >= 2 && count_sym.right >= 2) {
-		wiky_helper.unwrap(input, count_sym.pos.start, count_sym.pos.end, "==", "หัวข้อ");
+		wiky_helper.unwrap(input, count_sym.pos.start, count_sym.pos.end, "==", input.options.default_heading_text);
 	} else {
 	
 		var pos = wiky_helper.identify_whole_line(input);
-		wiky_helper.wrap(input, pos.start, pos.end, "===", "หัวข้อ");
+		wiky_helper.wrap(input, pos.start, pos.end, "===", input.options.default_heading_text);
 	}
-	
 	
 	return true;
 }
@@ -288,6 +338,9 @@ wiky_helper.wrap = function(input, pos_start, pos_end, symbols, default_text){
 	}
 	
 	input.value = s;
+	
+	input.update_view();
+	
 	wiky_helper.set_selection(input, pos_start + symbols.length, pos_end + symbols.length);
 }
 
@@ -297,6 +350,9 @@ wiky_helper.unwrap = function(input, pos_start, pos_end, symbols, default_text){
 	s = s.substring(0, pos_start - symbols.length) + s.substring(pos_start, pos_end) + s.substring(pos_end + symbols.length);
 	
 	input.value = s;
+	
+	input.update_view();
+	
 	wiky_helper.set_selection(input, pos_start - symbols.length, pos_end - symbols.length);
 }
 

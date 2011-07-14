@@ -13,6 +13,16 @@
 (function($){
 
  	$.fn.extend({ 
+	
+		wiky_uploader_tools: function() {
+			var self = this[0];
+			
+			return {
+				cancel: function(fileId) {
+					self._wiky_uploader._handler.cancel(fileId);
+				}
+			};
+		},
 
  		wiky_uploader: function(options) {
 			
