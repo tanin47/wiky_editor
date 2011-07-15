@@ -75,7 +75,7 @@
 											        onComplete: function(fileId, fileName, responseJSON){
 														$('#wiky_thumbnail_unit_'+fileId).find('.wiky_thumbnail_unit_img_progress').remove();
 														
-														$('#wiky_thumbnail_unit_'+fileId).children('.wiky_thumbnail_unit_img').html('<img src="http://image.dek-d.com/23/2362526/105276008"/>');
+														$('#wiky_thumbnail_unit_'+fileId).children('.wiky_thumbnail_unit_img').html('<img src="'+responseJSON.filename+'"/>');
 													},
 											        onCancel: function(id, fileName){
 														$('#wiky_thumbnail_unit_'+fileId).fadeOut(function() {$(this).remove();});
@@ -202,6 +202,7 @@ wiky_helper = {}
 
 wiky_helper.insert_image = function(input,url,alt) {
 	if (url == undefined || url == "") return;
+	if (alt == undefined) alt = "";
 	
 	var pos = wiky_helper.get_selection(input);
 	
@@ -209,8 +210,8 @@ wiky_helper.insert_image = function(input,url,alt) {
 	var s = input.value;
 	var inside = "";
 	
-	if (name != "")
-		inside = "[[File:"+url+" "+name+"]";
+	if (alt != "")
+		inside = "[[File:"+url+" "+alt+"]]";
 	else
 		inside = "[[File:"+url+"]]";
 		

@@ -7,8 +7,8 @@
 		<script type="text/javascript" src="wiky_base_editor.js"></script>
 		<script type="text/javascript" src="wiky_editor.js"></script>
 		<script type="text/javascript" src="wiky_uploader.js"></script>
-		<script type="text/javascript" src="wiky.js"></script>
 		<link href="wiky_editor.css" type="text/css" rel="stylesheet">
+		<link href="wiky.css" type="text/css" rel="stylesheet">
 		<title>Untitled Document</title>
 		<style>
 			.button_hover {
@@ -36,7 +36,7 @@
 		</span><br/>
 		<textarea id="textarea" placeholder="Your Content Here" class="wiky_textarea" style="width:500px;height:200px;"></textarea><br/>
 		<hr/>
-		<span id="preview_area">
+		<span id="preview_area" class="wiky_preview_area">
 			
 		</span>
 		<div id="wiky_link_dialog_box" class="wiky_link_dialog_box" style="position: fixed; width: 400px; z-index: 1001; top: 50%; left: 50%; display: block; margin-top: -75.5px; margin-left: -203px;display:none;">
@@ -48,7 +48,7 @@
 					<p>
 						Name:
 					</p>
-					<input type="text" id="wiky_link_dialog_box_name" class="wiky_dialog_textbox_input" placeholder="Title" value="" />
+					<input type="text" id="wiky_link_dialog_box_name" class="wiky_dialog_textbox_input" placeholder="Title"/>
 				</span>
 				<span class="wiky_dialog_box_row">
 					<p>
