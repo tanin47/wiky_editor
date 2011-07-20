@@ -42,6 +42,8 @@
 				$(this.options.preview_panel).html(wiky.process($(this).val()));
 			}
 			
+			this[0].update_view();
+			
 			// IE does not save cursor position, after blurring. Therefore, we save it for them;
 			obj.save_selection_position = {start:0,end:0};
 			$(obj).mouseup(function(){
