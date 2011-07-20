@@ -53,9 +53,13 @@
 			});
 			
 			$('#wiky_upload_button').wiky_uploader({
+													action:'/temporary_file/image',
 													mouseover_class:"button_hover",
 													mousedown_class:"button_down",
-													debug:true,
+													debug:false,
+													params:{
+														max_width:400
+													},
 													onSubmit: function(fileId, fileName){
 														$('#wiky_image_container').prepend('\
 															<span class="wiky_thumbnail_unit" id="wiky_thumbnail_unit_'+fileId+'">\
